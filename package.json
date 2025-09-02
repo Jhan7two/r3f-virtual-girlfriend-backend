@@ -6,7 +6,9 @@
   "type": "module",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js --ext js"
+    "dev": "nodemon index.js --ext js",
+    "test": "node --experimental-vm-modules node_modules/vitest/vitest.mjs run",
+    "test:watch": "node --experimental-vm-modules node_modules/vitest/vitest.mjs"
   },
   "author": "Wawa SENSEI <contact@wawasensei.dev>",
   "dependencies": {
@@ -17,6 +19,8 @@
     "openai": "^4.26.0"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.0.1",
+    "vitest": "^2.1.5",
+    "supertest": "^7.0.0"
   }
 }

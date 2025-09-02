@@ -34,10 +34,8 @@ function simulateValidAPIBehavior() {
   console.log('   1. User sends message: "Hello!"');
   console.log('   2. AI generates response: "Hi there!"');
   console.log('   3. ✅ ElevenLabs generates real audio');
-  console.log('   4. ✅ FFmpeg converts MP3 to WAV');
-  console.log('   5. ✅ Rhubarb generates precise lipsync');
-  console.log('   6. 📱 Frontend gets: text + audio + precise lipsync');
-  console.log('   7. 🎭 Avatar speaks with realistic lip movements');
+  console.log('   4. 📱 Frontend gets: text + audio');
+  console.log('   5. 🎭 Avatar speaks with wawa-lipsync processing');
   
   console.log('\n📊 Data Structure Comparison:');
   
@@ -147,9 +145,7 @@ function simulateSuccessLogs() {
   console.log('FFmpeg validated, starting conversion...');
   console.log('FFmpeg conversion completed in 234ms');
   console.log('✓ WAV file validated successfully (88,244 bytes)');
-  console.log('Rhubarb validated, starting lip sync generation...');
-  console.log('Rhubarb lip sync completed in 156ms');
-  console.log('✓ Enhanced lip sync processing successful (12 mouth cues)');
+  console.log('✓ Audio processing completed successfully');
   console.log('✓ Successfully converted audio file to base64 (117,659 base64 chars)');
 }
 

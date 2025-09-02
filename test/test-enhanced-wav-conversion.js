@@ -24,21 +24,7 @@ async function testEnhancedWavConversion() {
       console.log(`   FFmpeg error: ${ffmpegValidation.error}`);
     }
     
-    // Test 2: Rhubarb availability validation
-    console.log("\n2. Testing Rhubarb availability validation...");
-    const rhubarbPath = process.platform === 'win32' ? 
-      path.join(__dirname, '..', 'bin', 'rhubarb.exe') : 
-      path.join(__dirname, '..', 'bin', 'rhubarb');
-    
-    const rhubarbValidation = await audioErrorHandler.validateRhubarbAvailability(rhubarbPath);
-    console.log(`   Rhubarb available: ${rhubarbValidation.isAvailable}`);
-    if (rhubarbValidation.isAvailable) {
-      console.log(`   Rhubarb version: ${rhubarbValidation.version}`);
-    } else {
-      console.log(`   Rhubarb error: ${rhubarbValidation.error}`);
-    }
-    
-    // Test 3: Enhanced fallback lip sync creation
+    // Test 2: Enhanced fallback lip sync creation
     console.log("\n3. Testing enhanced fallback lip sync creation...");
     const testText = "Hello, this is a test message for enhanced lip sync generation.";
     const enhancedFallback = await audioErrorHandler.createEnhancedFallbackLipSync(
@@ -52,8 +38,8 @@ async function testEnhancedWavConversion() {
     console.log(`   Duration source: ${enhancedFallback.metadata.durationSource}`);
     console.log(`   Text length: ${enhancedFallback.metadata.textLength} characters`);
     
-    // Test 4: Error handling functions
-    console.log("\n4. Testing error handling functions...");
+    // Test 3: Error handling functions
+    console.log("\n3. Testing error handling functions...");
     
     // Test FFmpeg error handling
     const mockFFmpegError = new Error("No such file or directory");
@@ -65,18 +51,10 @@ async function testEnhancedWavConversion() {
     console.log(`   FFmpeg error category: ${ffmpegErrorAnalysis.category}`);
     console.log(`   Troubleshooting steps: ${ffmpegErrorAnalysis.troubleshooting.length}`);
     
-    // Test Rhubarb error handling
-    const mockRhubarbError = new Error("Invalid audio format");
-    const rhubarbErrorAnalysis = audioErrorHandler.handleRhubarbError(
-      mockRhubarbError,
-      "/test/input.wav",
-      "/test/output.json"
-    );
-    console.log(`   Rhubarb error category: ${rhubarbErrorAnalysis.category}`);
-    console.log(`   Troubleshooting steps: ${rhubarbErrorAnalysis.troubleshooting.length}`);
+
     
-    // Test 5: Lipsync metadata normalization
-    console.log("\n5. Testing lipsync metadata normalization...");
+    // Test 4: Lipsync metadata normalization
+    console.log("\n4. Testing lipsync metadata normalization...");
     const testLipsyncData = {
       metadata: {
         soundFile: "message_0.wav",

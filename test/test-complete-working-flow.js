@@ -232,7 +232,7 @@ testCompleteWorkingFlow().then(() => {
   console.log('\n🔧 System Features Working:');
   console.log('   - Real-time audio generation via ElevenLabs');
   console.log('   - FFmpeg audio conversion pipeline');
-  console.log('   - Rhubarb lip sync generation');
+
   console.log('   - Comprehensive error handling');
   console.log('   - Automatic fallbacks when needed');
   console.log('   - Health monitoring and diagnostics');

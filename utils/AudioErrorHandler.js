@@ -200,25 +200,7 @@ class AudioErrorHandler {
     return retryableErrors.includes(errorCode);
   }
 
-  /**
-   * Normalizes lipsync metadata to ensure consistent .mp3 extension
-   * @param {Object} lipsyncData - Original lipsync data
-   * @returns {Object} Normalized lipsync data with .mp3 extension
-   */
-  normalizeLipsyncMetadata(lipsyncData) {
-    if (!lipsyncData || !lipsyncData.metadata) {
-      return lipsyncData;
-    }
 
-    const normalized = { ...lipsyncData };
-    
-    if (normalized.metadata.soundFile) {
-      // Replace .wav extension with .mp3 for consistency
-      normalized.metadata.soundFile = normalized.metadata.soundFile.replace(/\.wav$/i, '.mp3');
-    }
-
-    return normalized;
-  }
 
   /**
    * Creates a comprehensive error response for the API
@@ -292,177 +274,13 @@ class AudioErrorHandler {
     }
   }
 
-  /**
-   * Validates that FFmpeg is available and working
-   * @returns {Promise<{isAvailable: boolean, version?: string, error?: string}>}
-   */
-  async validateFFmpegAvailability() {
-    try {
-      const { exec } = await import("child_process");
-      const { promisify } = await import("util");
-      const execAsync = promisify(exec);
-      
-      const { stdout } = await execAsync('ffmpeg -version');
-      const versionMatch = stdout.match(/ffmpeg version ([^\s]+)/);
-      
-      return {
-        isAvailable: true,
-        version: versionMatch ? versionMatch[1] : 'unknown'
-      };
-    } catch (error) {
-      return {
-        isAvailable: false,
-        error: error.message
-      };
-    }
-  }
 
-  /**
-   * Validates that Rhubarb is available and working
-   * @param {string} rhubarbPath - Path to Rhubarb executable
-   * @returns {Promise<{isAvailable: boolean, version?: string, error?: string}>}
-   */
-  async validateRhubarbAvailability(rhubarbPath) {
-    try {
-      const { exec } = await import("child_process");
-      const { promisify } = await import("util");
-      const execAsync = promisify(exec);
-      
-      // Try to get Rhubarb version
-      const { stdout } = await execAsync(`"${rhubarbPath}" --version`);
-      
-      return {
-        isAvailable: true,
-        version: stdout.trim()
-      };
-    } catch (error) {
-      return {
-        isAvailable: false,
-        error: error.message
-      };
-    }
-  }
 
-  /**
-   * Handles FFmpeg conversion errors with detailed analysis
-   * @param {Object} error - FFmpeg error object
-   * @param {string} inputPath - Input MP3 file path
-   * @param {string} outputPath - Output WAV file path
-   * @returns {Object} Structured error response with troubleshooting
-   */
-  handleFFmpegError(error, inputPath, outputPath) {
-    const errorAnalysis = {
-      timestamp: new Date().toISOString(),
-      errorType: "ffmpeg_conversion_error",
-      inputFile: inputPath,
-      outputFile: outputPath,
-      originalError: error.message,
-      troubleshooting: []
-    };
 
-    // Analyze common FFmpeg error patterns
-    const errorMessage = error.message.toLowerCase();
-    
-    if (errorMessage.includes('no such file or directory')) {
-      errorAnalysis.category = "missing_input_file";
-      errorAnalysis.troubleshooting = [
-        "Verify input MP3 file exists and is accessible",
-        "Check file path for special characters or spaces",
-        "Ensure MP3 file generation completed successfully"
-      ];
-    } else if (errorMessage.includes('permission denied')) {
-      errorAnalysis.category = "permission_error";
-      errorAnalysis.troubleshooting = [
-        "Check file system permissions for output directory",
-        "Verify write access to audios directory",
-        "Ensure no other process is using the output file"
-      ];
-    } else if (errorMessage.includes('invalid data found')) {
-      errorAnalysis.category = "corrupted_input";
-      errorAnalysis.troubleshooting = [
-        "Input MP3 file may be corrupted or incomplete",
-        "Regenerate the MP3 file from ElevenLabs",
-        "Verify MP3 file has valid audio content"
-      ];
-    } else if (errorMessage.includes('codec not found')) {
-      errorAnalysis.category = "codec_error";
-      errorAnalysis.troubleshooting = [
-        "FFmpeg installation may be incomplete",
-        "Verify FFmpeg supports MP3 and WAV formats",
-        "Reinstall FFmpeg with full codec support"
-      ];
-    } else {
-      errorAnalysis.category = "unknown_error";
-      errorAnalysis.troubleshooting = [
-        "Check FFmpeg installation and version",
-        "Verify input file format and integrity",
-        "Check available disk space and permissions"
-      ];
-    }
 
-    console.error("🔧 FFmpeg Error Analysis:", JSON.stringify(errorAnalysis, null, 2));
-    return errorAnalysis;
-  }
 
-  /**
-   * Handles Rhubarb lip sync errors with detailed analysis
-   * @param {Object} error - Rhubarb error object
-   * @param {string} wavPath - Input WAV file path
-   * @param {string} jsonPath - Output JSON file path
-   * @returns {Object} Structured error response with troubleshooting
-   */
-  handleRhubarbError(error, wavPath, jsonPath) {
-    const errorAnalysis = {
-      timestamp: new Date().toISOString(),
-      errorType: "rhubarb_lipsync_error",
-      inputFile: wavPath,
-      outputFile: jsonPath,
-      originalError: error.message,
-      troubleshooting: []
-    };
 
-    const errorMessage = error.message.toLowerCase();
-    
-    if (errorMessage.includes('no such file or directory')) {
-      errorAnalysis.category = "missing_input_file";
-      errorAnalysis.troubleshooting = [
-        "Verify WAV file was created successfully by FFmpeg",
-        "Check WAV file path and accessibility",
-        "Ensure FFmpeg conversion completed before Rhubarb execution"
-      ];
-    } else if (errorMessage.includes('permission denied')) {
-      errorAnalysis.category = "permission_error";
-      errorAnalysis.troubleshooting = [
-        "Check file system permissions for Rhubarb executable",
-        "Verify write access for JSON output file",
-        "Ensure Rhubarb binary has execute permissions"
-      ];
-    } else if (errorMessage.includes('invalid audio')) {
-      errorAnalysis.category = "invalid_audio";
-      errorAnalysis.troubleshooting = [
-        "WAV file may be corrupted or have invalid format",
-        "Verify FFmpeg conversion produced valid WAV output",
-        "Check WAV file duration and audio content"
-      ];
-    } else if (errorMessage.includes('command not found')) {
-      errorAnalysis.category = "missing_executable";
-      errorAnalysis.troubleshooting = [
-        "Rhubarb executable not found at expected path",
-        "Verify Rhubarb installation and binary location",
-        "Check platform-specific executable name (rhubarb vs rhubarb.exe)"
-      ];
-    } else {
-      errorAnalysis.category = "unknown_error";
-      errorAnalysis.troubleshooting = [
-        "Check Rhubarb installation and version compatibility",
-        "Verify WAV file format and audio content",
-        "Check available disk space and system resources"
-      ];
-    }
 
-    console.error("🎤 Rhubarb Error Analysis:", JSON.stringify(errorAnalysis, null, 2));
-    return errorAnalysis;
-  }
 
   /**
    * Creates enhanced fallback lip sync data with better duration estimation
@@ -537,8 +355,7 @@ class AudioErrorHandler {
       timestamp: new Date().toISOString(),
       services: {
         elevenlabs: { status: "unknown" },
-        filesystem: { status: "unknown" },
-        ffmpeg: { status: "unknown" }
+        filesystem: { status: "unknown" }
       },
       overallStatus: "unknown"
     };

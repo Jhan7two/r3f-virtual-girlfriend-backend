@@ -106,10 +106,8 @@ async function testAutomaticFileCreation() {
   console.log('   1. You send a message to /chat');
   console.log('   2. AI generates response text');
   console.log('   3. ElevenLabs creates MP3 audio automatically');
-  console.log('   4. FFmpeg converts MP3 to WAV automatically');
-  console.log('   5. Rhubarb generates JSON lipsync automatically');
-  console.log('   6. All files are saved with incremental numbers');
-  console.log('   7. Frontend receives base64 audio + lipsync data');
+  console.log('   4. All files are saved with incremental numbers');
+  console.log('   5. Frontend receives base64 audio data');
   
   console.log('\n   🎯 Key Points:');
   console.log('   ✅ NO manual file creation needed');
